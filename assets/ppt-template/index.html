@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>演示文稿</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- ECharts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js" defer></script>
+    <!-- Mermaid -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js" defer></script>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Cover -->
+        <section class="slide active" data-slide="1">
+            <div class="slide-header">
+                <div class="logo-area"></div>
+            </div>
+            <div class="slide-content cover">
+                <h1 class="cover-title">演示标题</h1>
+                <p class="cover-subtitle">副标题或描述</p>
+                <div class="cover-meta">
+                    <p>演讲人姓名</p>
+                    <p class="date">2026年1月</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 2: Chapter -->
+        <section class="slide" data-slide="2">
+            <div class="slide-header">
+                <h2 class="slide-title">章节标题</h2>
+            </div>
+            <div class="slide-content chapter">
+                <div class="chapter-number">01</div>
+                <h3 class="chapter-title">第一章节</h3>
+                <p class="chapter-desc">章节描述文字</p>
+            </div>
+        </section>
+
+        <!-- Slide 3: Content Slide -->
+        <section class="slide" data-slide="3">
+            <div class="slide-header">
+                <h2 class="slide-title">内容页标题</h2>
+            </div>
+            <div class="slide-content">
+                <div class="content-grid">
+                    <div class="text-block">
+                        <h3>要点标题</h3>
+                        <ul>
+                            <li>关键点 1</li>
+                            <li>关键点 2</li>
+                            <li>关键点 3</li>
+                        </ul>
+                    </div>
+                    <div class="image-block">
+                        <!-- 图片将在这里插入 -->
+                        <img src="" alt="示例图片">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 4: Chart Slide -->
+        <section class="slide" data-slide="4">
+            <div class="slide-header">
+                <h2 class="slide-title">数据展示</h2>
+            </div>
+            <div class="slide-content">
+                <div id="chart-container" style="width: 100%; height: 500px;"></div>
+            </div>
+        </section>
+
+        <!-- Slide 5: Mermaid Diagram -->
+        <section class="slide" data-slide="5">
+            <div class="slide-header">
+                <h2 class="slide-title">流程图示</h2>
+            </div>
+            <div class="slide-content center">
+                <div class="mermaid">
+graph LR
+A[开始] --> B[步骤1]
+B --> C[步骤2]
+C --> D[结束]
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 6: Video Slide -->
+        <section class="slide" data-slide="6">
+            <div class="slide-header">
+                <h2 class="slide-title">视频演示</h2>
+            </div>
+            <div class="slide-content center">
+                <video controls width="80%">
+                    <source src="" type="video/mp4">
+                    您的浏览器不支持视频播放
+                </video>
+                <p class="video-caption">视频说明文字</p>
+            </div>
+        </section>
+
+        <!-- Slide 7: Thank You -->
+        <section class="slide" data-slide="7">
+            <div class="slide-header">
+                <div class="logo-area"></div>
+            </div>
+            <div class="slide-content cover">
+                <h1 class="cover-title">谢谢</h1>
+                <p class="cover-subtitle">感谢观看</p>
+                <div class="contact-info">
+                    <p>联系方式</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="nav-controls">
+        <button id="prev-btn" class="nav-btn">&larr;</button>
+        <span id="slide-counter">1 / 7</span>
+        <button id="next-btn" class="nav-btn">&rarr;</button>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+        <div class="progress-fill"></div>
+    </div>
+
+    <script src="presentation.js"></script>
+    <script>
+        // Example ECharts initialization
+        window.addEventListener('load', function() {
+            var chartDom = document.getElementById('chart-container');
+            if (chartDom) {
+                var myChart = echarts.init(chartDom);
+                var option = {
+                    title: { text: '示例图表' },
+                    tooltip: {},
+                    xAxis: { data: ['A', 'B', 'C', 'D', 'E'] },
+                    yAxis: {},
+                    series: [{
+                        name: '数据',
+                        type: 'bar',
+                        data: [20, 30, 40, 50, 60],
+                        itemStyle: {
+                            color: '#3498db'
+                        }
+                    }]
+                };
+                myChart.setOption(option);
+
+                // Responsive chart
+                window.addEventListener('resize', function() {
+                    myChart.resize();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
