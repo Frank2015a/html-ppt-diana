@@ -14,11 +14,14 @@ class Presentation {
     }
 
     init() {
+        // Set up event listeners
         this.prevBtn.addEventListener('click', () => this.previousSlide());
         this.nextBtn.addEventListener('click', () => this.nextSlide());
 
+        // Keyboard navigation
         document.addEventListener('keydown', (e) => this.handleKeyPress(e));
 
+        // Touch support for mobile
         let touchStartX = 0;
         let touchEndX = 0;
 
@@ -31,6 +34,7 @@ class Presentation {
             this.handleSwipe(touchStartX, touchEndX);
         });
 
+        // Mouse wheel navigation
         document.addEventListener('wheel', (e) => {
             if (e.deltaY > 0) {
                 this.nextSlide();
@@ -39,11 +43,12 @@ class Presentation {
             }
         }, { passive: true });
 
+        // Initialize display
         this.updateDisplay();
     }
 
     handleKeyPress(e) {
-        switch (e.key) {
+        switch(e.key) {
             case 'ArrowRight':
             case 'ArrowDown':
             case 'PageDown':
@@ -74,8 +79,10 @@ class Presentation {
 
         if (Math.abs(diff) > swipeThreshold) {
             if (diff > 0) {
+                // Swipe left - next slide
                 this.nextSlide();
             } else {
+                // Swipe right - previous slide
                 this.previousSlide();
             }
         }
@@ -96,12 +103,19 @@ class Presentation {
     goToSlide(index) {
         if (index < 0 || index >= this.totalSlides) return;
 
+        // Remove active class from current slide
         this.slides[this.currentSlide].classList.remove('active');
+
+        // Update current slide index
         this.currentSlide = index;
+
+        // Add active class to new slide
         this.slides[this.currentSlide].classList.add('active');
 
+        // Update display
         this.updateDisplay();
 
+        // Trigger custom event
         const event = new CustomEvent('slideChange', {
             detail: { currentSlide: this.currentSlide, totalSlides: this.totalSlides }
         });
@@ -109,14 +123,18 @@ class Presentation {
     }
 
     updateDisplay() {
+        // Update counter
         this.slideCounter.textContent = `${this.currentSlide + 1} / ${this.totalSlides}`;
 
+        // Update progress bar
         const progress = ((this.currentSlide + 1) / this.totalSlides) * 100;
         this.progressFill.style.width = `${progress}%`;
 
+        // Update navigation buttons
         this.prevBtn.disabled = this.currentSlide === 0;
         this.nextBtn.disabled = this.currentSlide === this.totalSlides - 1;
 
+        // Render Mermaid diagrams only when the slide is visible
         const currentSlideElement = this.slides[this.currentSlide];
         const mermaidElements = currentSlideElement.querySelectorAll('.mermaid:not([data-processed])');
         if (mermaidElements.length > 0 && typeof mermaid !== 'undefined') {
@@ -127,17 +145,20 @@ class Presentation {
             }
         }
 
-        if (typeof echarts !== 'undefined') {
-            const chartContainers = currentSlideElement.querySelectorAll('div[id$="-chart"]');
-            chartContainers.forEach(container => {
-                const chartInstance = echarts.getInstanceByDom(container);
-                if (chartInstance) {
-                    chartInstance.resize();
-                }
-            });
-        }
+        // Resize ECharts if on a slide with charts
+        // 图表容器在 HTML 中命名为 "*-chart"（例如 target-chart/user-chart），
+        // 之前的选择器写成了 [id^="chart-"]，导致 slide 切换时没有触发 resize，
+        // 从而出现"图表被压缩成很小一块"的问题（初始化发生在 display:none 的 slide 上）。
+        const chartContainers = currentSlideElement.querySelectorAll('div[id$="-chart"]');
+        chartContainers.forEach(container => {
+            const chartInstance = echarts.getInstanceByDom(container);
+            if (chartInstance) {
+                chartInstance.resize();
+            }
+        });
     }
 
+    // Public API
     getCurrentSlide() {
         return this.currentSlide;
     }
@@ -147,44 +168,10 @@ class Presentation {
     }
 }
 
-let presentationInitialized = false;
-let fullscreenHandlerBound = false;
-
-function initializePresentation() {
-    const slides = document.querySelectorAll('.slide');
-    if (slides.length === 0) {
-        return false;
-    }
-
-    if (presentationInitialized) {
-        return true;
-    }
-
-    presentationInitialized = true;
-    window.presentation = new Presentation();
-
-    initImageModal();
-    initImageCarousel();
-    bindFullscreenShortcut();
-
-    return true;
-}
-
-function bindFullscreenShortcut() {
-    if (fullscreenHandlerBound) {
-        return;
-    }
-    fullscreenHandlerBound = true;
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'f' || e.key === 'F') {
-            toggleFullscreen();
-        }
-    });
-}
-
 // Initialize presentation when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Mermaid is loaded via CDN and exposed as a global (`window.mermaid`).
+    // 初始化放在这里，避免在 slide 还处于 display:none 时渲染导致图表尺寸异常。
     if (typeof mermaid !== 'undefined' && typeof mermaid.initialize === 'function') {
         mermaid.initialize({
             startOnLoad: false,
@@ -203,98 +190,41 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (!initializePresentation()) {
-        document.addEventListener('slidesLoaded', () => {
-            initializePresentation();
-        }, { once: true });
-    }
+    window.presentation = new Presentation();
+
+    // Optional: Add fullscreen support
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'f' || e.key === 'F') {
+            toggleFullscreen();
+        }
+    });
 });
 
-function initImageModal() {
-    const modal = document.getElementById('imageModal');
-    const modalImg = document.getElementById('modalImage');
-    const closeModal = document.getElementById('closeModal');
-
-    if (!modal || !modalImg || !closeModal) {
-        return;
-    }
-
-    document.querySelectorAll('.slide-content img').forEach(img => {
-        img.addEventListener('click', function() {
-            modal.classList.add('active');
-            modalImg.src = this.src;
-        });
-    });
-
-    closeModal.addEventListener('click', () => {
-        modal.classList.remove('active');
-    });
-
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal || e.target === modalImg) {
-            modal.classList.remove('active');
-        }
-    });
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
-            modal.classList.remove('active');
-        }
-    });
-}
-
-function initImageCarousel() {
-    document.querySelectorAll('.image-carousel').forEach(carousel => {
-        const images = carousel.querySelectorAll('.carousel-images');
-        const controls = carousel.querySelector('.carousel-controls');
-
-        if (!controls || images.length <= 1) return;
-
-        images.forEach((_, index) => {
-            const dot = document.createElement('div');
-            dot.classList.add('carousel-dot');
-            if (index === 0) dot.classList.add('active-dot');
-            dot.addEventListener('click', () => showCarouselImage(carousel, index));
-            controls.appendChild(dot);
-        });
-
-        if (images.length > 0) {
-            images[0].classList.add('active-carousel');
-        }
-    });
-}
-
-function showCarouselImage(carousel, index) {
-    const images = carousel.querySelectorAll('.carousel-images');
-    const dots = carousel.querySelectorAll('.carousel-dot');
-
-    images.forEach(img => img.classList.remove('active-carousel'));
-    dots.forEach(dot => dot.classList.remove('active-dot'));
-
-    images[index].classList.add('active-carousel');
-    dots[index].classList.add('active-dot');
-}
-
+// Fullscreen functionality
 function toggleFullscreen() {
     if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(err => {
             console.log(`Error attempting to enable fullscreen: ${err.message}`);
         });
-    } else if (document.exitFullscreen) {
-        document.exitFullscreen();
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
     }
 }
 
+// Utility function to create ECharts
 function createChart(containerId, option) {
     const container = document.getElementById(containerId);
-    if (!container || typeof echarts === 'undefined') {
-        console.error(`Chart container ${containerId} not found or echarts missing`);
+    if (!container) {
+        console.error(`Chart container ${containerId} not found`);
         return null;
     }
 
     const chart = echarts.init(container);
     chart.setOption(option);
 
+    // Make chart responsive
     window.addEventListener('resize', () => {
         chart.resize();
     });
@@ -302,6 +232,7 @@ function createChart(containerId, option) {
     return chart;
 }
 
+// Utility function to add a new slide programmatically
 function addSlide(slideHTML, position = -1) {
     const container = document.querySelector('.presentation-container');
     const tempDiv = document.createElement('div');
@@ -315,9 +246,11 @@ function addSlide(slideHTML, position = -1) {
         container.insertBefore(newSlide, referenceSlide);
     }
 
+    // Reinitialize presentation
     window.presentation = new Presentation();
 }
 
+// Export for external use
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { Presentation, createChart, addSlide, toggleFullscreen };
 }

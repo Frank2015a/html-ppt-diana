@@ -1,427 +1,292 @@
 ---
 name: html-ppt-diana
-description: Create professional HTML-based presentations (web PPT) for business and educational purposes. Use when user asks to "create HTML PPT", "make web presentation", "build presentation", "create slides", or mentions presenting to clients/students. Generates keyboard-navigable, landscape-format HTML presentations with unified layouts, supporting local media assets, ECharts charts, and Mermaid diagrams. No emojis allowed - maintains professional quality for business presentations, client demos, and course delivery.
+description: Create professional HTML-based presentations (web PPT) using the "总分" architecture (index.html + slides.config.js + slides/*.js) for business and education. Use when user asks to create HTML PPT, build web presentations, create slides, or present to clients/students. Produces keyboard-navigable, landscape-format HTML decks with shared styles and optional ECharts/Mermaid integration.
 ---
 
-# Diana - 演示专家
+# Diana - HTML PPT 演示专家
 
-Diana 专注于创建商用级别的 HTML 演示文稿（网页 PPT），提供键盘翻页、媒体集成、数据可视化等专业演示功能。
+## 核心架构（必须遵守：总分）
 
-## Overview
+使用“总分”架构拆分演示文稿，确保单页修改不影响其他页面：
 
-此 Skill 将工作目录中的素材（文稿、图片、视频）转换为专业的 HTML 演示文稿，支持：
-- 键盘左右键翻页导航
-- 统一的页面布局和品牌风格
-- ECharts 数据图表和 Mermaid 流程图（已优化渲染策略）
-- 本地媒体素材引用
-- 商务演示和课程讲解的专业质量
-- 离线环境部署支持（可选）
-
-## Workflow
-
-### Step 1: 分析项目需求和素材
-
-**收集信息：**
-1. 演示目的（商务演示、课程培训、投资路演等）
-2. 目标受众
-3. 演示时长和页数预期
-4. 品牌色彩和风格偏好
-
-**扫描工作目录：**
-```bash
-# 查找所有素材文件
-ls -R
-```
-
-识别：
-- 文稿内容（.md, .txt, .docx）
-- 图片素材（.png, .jpg, .jpeg, .svg）
-- 视频素材（.mp4, .mov, .webm）
-- 素材说明（图片/视频对应的 .md 文件）
-
-**解析素材说明：**
-对于每个媒体文件（如 `image-1.png`），查找对应的说明文件（如 `image-1.md`），读取其内容以了解：
-- 素材的用途和场景
-- 建议放置的位置
-- 相关说明文字
-
-### Step 2: 规划演示结构
-
-**基于内容设计页面结构：**
-
-典型演示结构：
-1. **封面页** - 标题、副标题、演讲人
-2. **目录页**（可选）- 章节预览
-3. **章节页** - 标记新章节开始
-4. **内容页** - 核心信息展示
-5. **数据页** - 图表和统计
-6. **流程页** - Mermaid 流程图
-7. **媒体页** - 图片或视频展示
-8. **总结页** - 关键要点回顾
-9. **结束页** - 感谢和联系方式
-
-**选择合适的布局模式：**
-
-参考 `references/layout-patterns.md` 中的布局模式：
-- 左文右图：产品介绍、功能说明
-- 纯文本：关键观点、总结
-- 双栏对比：方案对比、优劣分析
-- 图表页：数据展示、趋势分析
-- 流程图页：流程说明、系统架构
-- 网格展示：案例列表、团队介绍
-
-### Step 3: 准备 HTML 结构
-
-**复制模板到工作目录：**
-```bash
-# 复制 HTML PPT 模板
-cp -r {skill_dir}/assets/ppt-template/* .
-```
-
-模板包含：
-- `index.html` - 主 HTML 文件
-- `style.css` - 样式文件
-- `presentation.js` - 交互逻辑
-
-**可选：与 frontend-design Skill 协作**
-
-如果需要定制化设计风格：
-1. 调用 `frontend-design` skill 设计独特的视觉风格
-2. 获取定制的 CSS 样式和布局
-3. 将定制样式集成到 `style.css`
-
-### Step 4: 生成页面内容
-
-**遵循设计原则：**
-
-参考 `references/design-principles.md` 确保：
-- ❌ 禁止使用 emoji 表情
-- ✅ 统一的字体和配色
-- ✅ 清晰的视觉层次
-- ✅ 适当的留白
-- ✅ 高质量媒体素材
-
-**编写 HTML 内容：**
-
-为每个页面创建 `<section class="slide">` 结构：
-
-```html
-<!-- 封面页 -->
-<section class="slide active" data-slide="1">
-    <div class="slide-header">
-        <div class="logo-area"></div>
-    </div>
-    <div class="slide-content cover">
-        <h1 class="cover-title">演示标题</h1>
-        <p class="cover-subtitle">副标题</p>
-        <div class="cover-meta">
-            <p>演讲人</p>
-            <p class="date">日期</p>
-        </div>
-    </div>
-</section>
-
-<!-- 内容页 - 左文右图 -->
-<section class="slide" data-slide="2">
-    <div class="slide-header">
-        <h2 class="slide-title">页面标题</h2>
-    </div>
-    <div class="slide-content">
-        <div class="content-grid">
-            <div class="text-block">
-                <h3>要点标题</h3>
-                <ul>
-                    <li>关键点 1</li>
-                    <li>关键点 2</li>
-                    <li>关键点 3</li>
-                </ul>
-            </div>
-            <div class="image-block">
-                <img src="./images/example.png" alt="图片说明">
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- 图表页 -->
-<section class="slide" data-slide="3">
-    <div class="slide-header">
-        <h2 class="slide-title">数据展示</h2>
-    </div>
-    <div class="slide-content">
-        <div id="chart-1" style="width: 100%; height: 500px;"></div>
-    </div>
-</section>
-
-<!-- 流程图页 -->
-<section class="slide" data-slide="4">
-    <div class="slide-header">
-        <h2 class="slide-title">流程说明</h2>
-    </div>
-    <div class="slide-content center">
-        <div class="mermaid">
-            graph LR
-            A[开始] --> B[步骤1]
-            B --> C[步骤2]
-            C --> D[结束]
-        </div>
-    </div>
-</section>
-
-<!-- 视频页 -->
-<section class="slide" data-slide="5">
-    <div class="slide-header">
-        <h2 class="slide-title">视频演示</h2>
-    </div>
-    <div class="slide-content center">
-        <video controls width="80%">
-            <source src="./videos/demo.mp4" type="video/mp4">
-        </video>
-        <p class="video-caption">视频说明</p>
-    </div>
-</section>
-```
-
-### Step 5: 集成数据可视化
-
-**ECharts 图表：**
-
-在 `<script>` 标签中初始化图表：
-
-```javascript
-// 在页面加载后初始化
-window.addEventListener('load', function() {
-    // 柱状图示例
-    const chart1 = echarts.init(document.getElementById('chart-1'));
-    chart1.setOption({
-        title: { text: '销售数据' },
-        tooltip: {},
-        xAxis: { data: ['Q1', 'Q2', 'Q3', 'Q4'] },
-        yAxis: {},
-        series: [{
-            name: '销售额',
-            type: 'bar',
-            data: [120, 200, 150, 180],
-            itemStyle: { color: '#3498db' }
-        }]
-    });
-
-    // 折线图示例
-    const chart2 = echarts.init(document.getElementById('chart-2'));
-    chart2.setOption({
-        title: { text: '增长趋势' },
-        tooltip: {},
-        xAxis: {
-            type: 'category',
-            data: ['1月', '2月', '3月', '4月', '5月', '6月']
-        },
-        yAxis: { type: 'value' },
-        series: [{
-            data: [30, 45, 60, 75, 90, 110],
-            type: 'line',
-            smooth: true,
-            itemStyle: { color: '#e74c3c' }
-        }]
-    });
-
-    // 响应式调整
-    window.addEventListener('resize', function() {
-        chart1.resize();
-        chart2.resize();
-    });
-});
-```
-
-常用图表类型：
-- **柱状图 (bar)**: 对比数值
-- **折线图 (line)**: 趋势变化
-- **饼图 (pie)**: 占比构成
-- **散点图 (scatter)**: 相关性
-- **雷达图 (radar)**: 多维评估
-
-**Mermaid 流程图：**
-
-直接在 HTML 中使用 Mermaid 语法：
-
-```html
-<div class="mermaid">
-    graph TB
-    A[用户需求] --> B{需求分析}
-    B -->|可行| C[设计方案]
-    B -->|不可行| D[重新评估]
-    C --> E[开发实现]
-    E --> F[测试验证]
-    F --> G[上线部署]
-</div>
-```
-
-Mermaid 图表类型：
-- `graph` / `flowchart`: 流程图
-- `sequenceDiagram`: 序列图
-- `classDiagram`: 类图
-- `gantt`: 甘特图
-- `pie`: 饼图
-
-### Step 6: 引用本地素材
-
-**组织素材目录：**
 ```
 project-dir/
 ├── index.html
 ├── style.css
 ├── presentation.js
+├── slides.config.js
+├── slides/
+│   ├── slide-01-cover.js
+│   ├── slide-02-overview.js
+│   └── ...
 ├── images/
-│   ├── cover-bg.jpg
-│   ├── product-1.png
-│   └── chart-bg.png
 └── videos/
-    ├── demo.mp4
-    └── tutorial.mp4
 ```
 
-**图片引用：**
-```html
-<img src="./images/product-1.png" alt="产品截图">
+**规则：**
+1. `index.html` 只负责加载配置、注入页面、控制导航，不直接写任何页面内容。
+2. `slides.config.js` 是唯一的页面顺序来源，新增/删除页面只改这里。
+3. 每个页面对应一个 `slides/slide-xx-*.js` 文件，并导出 `renderSlideXX()`。
+4. 共享样式写入 `style.css`。页面级样式必须命名空间化（例如 `.slide-03 .custom`）以避免跨页影响。
+5. 默认不使用 emoji，除非用户明确要求或已有素材需要保留。
+
+## Workflow
+
+### Step 1: 分析需求与素材
+
+收集信息：
+1. 演示目的（商务演示、课程培训、路演等）
+2. 目标受众
+3. 页数与时长预期
+4. 品牌色与风格偏好
+
+扫描素材：
+```bash
+ls -R
+```
+识别文稿、图片、视频及说明文件。
+
+### Step 2: 规划演示结构
+
+按“封面 → 章节 → 内容 → 数据 → 流程 → 总结”的结构规划页面，参考：
+- `references/layout-patterns.md`
+- `references/design-principles.md`
+
+### Step 3: 复制模板（总分架构）
+
+复制模板到工作目录：
+```bash
+cp -r {skill_dir}/assets/ppt-template/* .
 ```
 
-**视频引用：**
-```html
-<video controls width="80%">
-    <source src="./videos/demo.mp4" type="video/mp4">
-    您的浏览器不支持视频播放
-</video>
+模板包含：
+- `index.html` - 总控加载与渲染
+- `slides.config.js` - 页面顺序配置
+- `slides/` - 页面文件目录
+- `style.css` - 共享样式
+- `presentation.js` - 交互逻辑
+- `generate_pdf.py` - PDF 导出脚本
+
+### Step 4: 生成页面内容（分）
+
+**配置页面顺序：**
+```js
+const slidesConfig = [
+  { id: 'slide-01', file: 'slides/slide-01-cover.js', title: '封面' },
+  { id: 'slide-02', file: 'slides/slide-02-overview.js', title: '概览' }
+];
 ```
 
-**优化建议：**
-- 图片压缩到合理大小（< 500KB）
-- 视频时长控制在 2 分钟以内
-- 使用相对路径确保可移植性
-
-### Step 7: 测试和交付
-
-**功能测试：**
-1. 在浏览器中打开 `index.html`
-2. 测试键盘导航（左右箭头键）
-3. 验证所有图片和视频正常显示
-4. 检查 ECharts 图表渲染
-5. 确认 Mermaid 流程图显示
-6. 测试导航按钮和进度条
-
-**浏览器兼容性：**
-- Chrome / Edge (推荐)
-- Firefox
-- Safari
-
-**演示模式：**
-- 按 `F` 键进入全屏模式
-- 使用鼠标滚轮或触摸滑动也可翻页
-
-**交付文件：**
-```
-presentation.zip
-├── index.html          # 主文件
-├── style.css           # 样式
-├── presentation.js     # 交互逻辑
-├── images/            # 图片素材
-└── videos/            # 视频素材
+**编写单页 JS：**
+```js
+function renderSlide01() {
+  return `
+<section class="slide active" data-slide="1">
+  <div class="slide-header">
+    <div class="logo-area"></div>
+  </div>
+  <div class="slide-content cover">
+    <h1 class="cover-title">演示标题</h1>
+    <p class="cover-subtitle">副标题</p>
+    <div class="cover-meta">
+      <p>演讲人</p>
+      <p class="date">2026年1月</p>
+    </div>
+  </div>
+</section>
+  `.trim();
+}
 ```
 
-## Design Guidelines
+**注意：**
+- 只返回一个 `<section class="slide">`，不要在 `index.html` 写页面内容。
+- `renderSlideXX` 必须与 `slides.config.js` 中的 `id` 对应。
 
-创建演示文稿时，务必遵循专业设计原则：
+### Step 5: 集成数据可视化
 
-**参考文档：**
-- `references/design-principles.md` - 完整的设计原则和检查清单
-- `references/layout-patterns.md` - 常见布局模式和实现
+**ECharts：**
+- 图表容器 ID 必须以 `-chart` 结尾。
+- 在 `slidesLoaded` 后初始化图表，避免 DOM 未注入：
 
-**关键原则：**
-1. **专业性** - 禁止 emoji，使用高质量素材
-2. **一致性** - 统一的布局和配色
-3. **层次性** - 清晰的视觉层级
-4. **留白** - 充足的空间，避免拥挤
-5. **可读性** - 大字体，高对比度
+```js
+document.addEventListener('slidesLoaded', () => {
+  const chart = createChart('sales-chart', {
+    title: { text: '示例图表' },
+    tooltip: {},
+    xAxis: { data: ['Q1', 'Q2', 'Q3', 'Q4'] },
+    yAxis: {},
+    series: [{ type: 'bar', data: [120, 200, 150, 180] }]
+  });
+});
+```
 
-## Common Use Cases
+**Mermaid：**
+直接在页面 HTML 中使用 Mermaid 语法，渲染由 `presentation.js` 处理。
 
-### 商务演示 (Business Presentation)
-- 公司介绍、产品发布、客户方案
-- 强调数据支撑和案例展示
-- 包含联系方式和品牌元素
+#### Mermaid / 流程图页布局策略（推荐）
 
-### 投资路演 (Pitch Deck)
-- 问题、解决方案、市场规模
-- 商业模式和财务预测
-- 团队介绍和融资需求
+当页面以流程图为主视觉时，优先按“标题 → 图 → 结论/说明（1 行）”组织，避免图过小或留白失衡：
 
-### 培训课程 (Training Course)
-- 章节清晰、学习目标明确
-- 流程图和操作演示
-- 练习和总结
+1. **容器先定宽，再让图自适应**：不要只写 `max-width`，否则容器可能随内容收缩，导致图看起来很小。
+2. **强制 SVG 充满容器**：用 CSS 让 Mermaid 生成的 `svg` 按容器宽度自适应，避免缩在中间。
+3. **必要时用 Mermaid init 指令放大图**：通过 `fontSize / nodeSpacing / rankSpacing` 主动扩大视觉占比，而不是靠“放大浏览器”。
+4. **复杂图优先拆分**：节点超过 8-10 个时，优先拆两页或改为分阶段（如“输入/处理/输出”三段），保持单页可读性。
 
-### 项目汇报 (Project Report)
-- 项目背景和目标
-- 进度和成果展示
-- 问题和下一步计划
+**CSS 推荐（写在 `style.css`）：**
+```css
+.mermaid { width: 100%; min-height: 320px; display: flex; align-items: center; justify-content: center; }
+.mermaid svg { width: 100% !important; height: auto !important; display: block; }
+```
 
-## Keyboard Shortcuts
+**单页 Mermaid 推荐（写在 `slides/slide-xx-*.js` 中）：**
+```text
+%%{init: {'themeVariables': {'fontSize': '20px'}, 'flowchart': {'nodeSpacing': 60, 'rankSpacing': 80}}}%%
+flowchart LR
+  A --> B --> C
+```
 
-演示时可用的快捷键：
-- `←` / `→` - 上一页/下一页
-- `↑` / `↓` - 上一页/下一页
-- `Home` - 第一页
-- `End` - 最后一页
-- `Space` - 下一页
-- `F` - 全屏切换
+### Step 6: 样式与一致性
+
+- 统一字体、配色、间距。
+- 页面级样式必须命名空间化，避免影响其他页面。
+- 如需新布局，先在 `style.css` 中声明，再在页面中使用。
+
+#### 经验沉淀：两类高频失误（必须规避）
+
+**A. Mermaid 流程图“比例过小 / 缩在角落”**
+
+常见诱因：只设置 `max-width`、容器随内容收缩、SVG 未强制铺满、以及在不可见（`display:none`）状态下渲染导致初始尺寸错误。
+
+**基线要求（写入 `style.css`，全局复用）：**
+```css
+.mermaid { width: 100%; min-height: 320px; display: flex; align-items: center; justify-content: center; }
+.mermaid svg { width: 100% !important; height: auto !important; display: block; }
+```
+
+**页面内放大（仅在需要时使用 init 指令）：**
+```text
+%%{init: {'themeVariables': {'fontSize': '22px'}, 'flowchart': {'nodeSpacing': 70, 'rankSpacing': 90}}}%%
+```
+
+**B. 配色“多套主题叠加 / 五颜六色显 low”**
+
+常见诱因：同时存在两套 `:root` 变量（例如模板的 `--primary-color/--secondary-color` 与项目自定义的 `--primary-blue/--primary-green`），以及在页面/图表中硬编码高饱和颜色（红/黄/紫等）导致视觉不一致。
+
+**基线要求（单一真源）：**
+1. 只保留一套主色体系，其他主题变量必须显式覆盖为主色（例如把 `--primary-color/--secondary-color/--accent-color` 映射到品牌色）。
+2. 页面与 Mermaid/ECharts 颜色优先使用 CSS 变量/语义变量，禁止随手写 `#ef4444/#f59e0b/...` 作为主视觉。
+3. 需要“强调/风险”时，用同一套主色做深浅变化或用低饱和底色（surface）承载，避免跳色。
+
+**交付前必做检查：**
+- `rg "#[0-9a-fA-F]{3,8}"` 检查新增硬编码颜色是否有必要（特别是红/黄等高饱和）。
+- 流程图页确认 Mermaid 容器宽度为 100%，SVG 铺满且字号可读（不依赖浏览器缩放）。
+
+### Step 7: 测试与交付
+
+测试清单：
+1. 打开 `index.html`，确认页面全部加载
+2. 键盘/鼠标/触摸翻页正常
+3. 图片/视频资源显示正常
+4. Mermaid 与 ECharts 正常渲染
+5. **溢出检查**：逐页确认正文未被截断（特别是“左文右图”页与长段落页）
+
+#### 质量门禁：内容溢出（Overflow）治理
+
+**目标**：任何一页都不应出现“内容被挤出可视区域、需要用户滚动才能看全”的情况。
+
+**检测（推荐实现方式）**
+1. 在 `presentation.js` 的 `updateDisplay()` 后做自动检测：对当前页 `.slide-content` 判断 `scrollHeight > clientHeight`。
+2. 若溢出，立即触发**自动自适配**（收敛间距/媒体高度/版式），默认不在页面上显示任何提示，避免影响客户演示；调试时才显示标记。
+
+**处理决策（建议按顺序尝试）**
+1. **先收敛间距**（不降低最小字号）：减少 `slide-content` padding、卡片 padding、模块间 margin/gap；必要时限制右侧图片 `max-height`。
+2. 若仍溢出：启用更激进的收敛策略（例如进一步压缩 `gap`/列表行距、限制图片高度、收敛模块间距），必要时小幅下调字号但不得低于最小字号。
+3. 若仍溢出：判定为**硬溢出**，需要做结构调整：
+   - **拆分页面**：把“指标/价值/收益”拆成两页（例如“指标&价值”一页，“收益&案例图”一页）。
+   - **重排结构**：把纵向堆叠改为横向并列（如三张统计卡改一行三列）。
+   - **精简文案**：每页正文建议 4-6 行要点，长句改短句。
+
+**最小字号原则（必须遵守）**
+- 正文/列表不低于 `16px`（投屏与远距观看下限）。
+- 优先通过结构与留白治理解决溢出，避免靠“把字变小”硬塞内容。
+
+#### 文字清晰度门禁（避免“阴影模糊/发虚”）
+
+在 Windows + Chrome/Chromium 环境中，以下写法容易让文字在 100% 缩放下看起来发虚：
+1. 对文字使用 `opacity < 1`（会禁用子像素抗锯齿）。
+2. 使用渐变文字：`-webkit-background-clip: text` + `-webkit-text-fill-color: transparent`（同样会禁用子像素抗锯齿）。
+
+**规则：**
+- 需要“弱化文字”时，优先用**不带 alpha 的浅色**（例如 `#eaf3ff` / `#94a3b8`），不要用 `opacity` 或 `rgba(..., 0.x)`。
+- 需要“强调数字”时，优先用实心色（品牌蓝/绿）或把渐变放到**背景块**上，不要做渐变文字。
+
+**调试开关（仅用于开发）**
+- 通过 URL 参数开启可视化溢出标记：`?debugOverflow=1`（默认关闭，演示给客户时不得开启）。
+
+交付结构：
+```
+index.html
+style.css
+presentation.js
+slides.config.js
+slides/
+images/
+videos/
+```
+
+### Step 8: 生成 PDF（可选）
+
+推荐使用 Playwright 导出（高保真、背景不丢、尺寸稳定）：
+
+```bash
+# 进入演示根目录（与 index.html 同级）
+npm install
+npx playwright install chromium
+node export_pdf.mjs output.pdf
+```
+
+说明：
+1. 依赖 `@media print` + `@page` 的 16:9 页面尺寸设定，避免 A4 缩放导致的信息丢失。
+2. 导出前会等待图片/流程图渲染稳定，并**强制渲染所有 Mermaid**（否则非当前页流程图可能为空）。
+3. `@media print` 中需要强制保持桌面端的两列布局（避免命中 `@media (max-width: 1024px)` 导致左右布局折叠为上下）。
+4. 导出时会注入每页右下角页码（`x / total`），仅影响PDF，不影响屏幕演示。
+5. 导出时会复用演示端的溢出治理逻辑做自动收敛。
+
+（旧版）Python 脚本 `generate_pdf.py` 仅作为遗留方案，不保证 100% 还原。
 
 ## Troubleshooting
 
-**图表不显示：**
-- 检查 ECharts CDN 连接
-- 确认图表容器 ID 正确
-- 查看浏览器控制台错误
-
-**图表显示为很小的块：**
-- ✅ 确保图表容器 ID 以 `-chart` 结尾（如 `sales-chart`）
-- ✅ 模板使用 `[id$="-chart"]` 选择器自动触发 resize
-- ❌ 不要使用 `chart-sales` 这样的命名（选择器无法匹配）
-- 详见 `references/echarts-best-practices.md`
-
-**流程图不渲染：**
-⚠️ **重要**：Mermaid 渲染问题已通过以下策略解决：
-1. 使用 cdnjs CDN 替代 jsdelivr（可用性更好）
-2. 在 `presentation.js` 的 `DOMContentLoaded` 中初始化（`startOnLoad: false`）
-3. 在翻页到对应 slide 时才按需渲染
-4. 使用 `:not([data-processed])` 选择器避免重复渲染
-
-详细的修复方案参见 `references/mermaid-fix.md`
-
-**图片/视频无法加载：**
-- 确认文件路径正确
-- 检查文件是否存在
-- 验证文件格式支持
+**页面空白：**
+- 检查 `slides.config.js` 是否被加载
+- 检查 `slides/*.js` 路径是否正确
+- 检查 `renderSlideXX` 命名是否匹配
 
 **翻页不工作：**
-- 确保 `presentation.js` 已正确加载
-- 检查 slide 的 class 名称
-- 查看控制台 JavaScript 错误
+- 确认 `presentation.js` 正确加载
+- 确认 `slidesLoaded` 事件已触发
 
-**离线环境无法使用：**
-- 参考 `references/offline-setup.md` 配置离线静态资源
-- 下载 Mermaid 和 ECharts 到 `libs/` 目录
-- 修改 HTML 中的 CDN 引用为本地路径
+**图表不显示：**
+- 确认 ECharts CDN 可用
+- 容器 ID 以 `-chart` 结尾
+- 初始化放在 `slidesLoaded` 之后
+
+**流程图不渲染：**
+- 检查 Mermaid CDN
+- 参考 `references/mermaid-fix.md`
 
 ## Resources
 
-### assets/ppt-template/
-包含完整的 HTML PPT 模板：
-- `index.html` - 基础 HTML 结构和示例页面
-- `style.css` - 专业商务风格样式
-- `presentation.js` - 键盘导航和交互逻辑
+**模板：** `assets/ppt-template/`
+- `index.html`
+- `slides.config.js`
+- `slides/*.js`
+- `style.css`
+- `presentation.js`
+- `generate_pdf.py`
 
-### references/
-详细的设计指南、布局参考和技术文档：
-- `design-principles.md` - 商用演示设计原则、色彩系统、可访问性
-- `layout-patterns.md` - 10+ 种常见布局模式和实现示例
-- `echarts-best-practices.md` - ⭐ ECharts 图表最佳实践（容器命名规范、常见问题解决方案）
-- `mermaid-fix.md` - ⭐ Mermaid 渲染问题修复方案（CDN 替换、初始化策略、按需渲染）
-- `offline-setup.md` - 离线部署指南（静态资源下载、本地引用配置、自动化脚本）
+**参考：**
+- `references/design-principles.md`
+- `references/layout-patterns.md`
+- `references/echarts-best-practices.md`
+- `references/mermaid-fix.md`
+- `references/offline-setup.md`

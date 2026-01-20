@@ -1,0 +1,9 @@
+{
+  "name": "html-ppt-export",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}
+

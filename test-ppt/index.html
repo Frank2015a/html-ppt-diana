@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF 生成测试演示</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- ECharts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js" defer></script>
+    <!-- Mermaid -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js" defer></script>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Cover -->
+        <section class="slide active" data-slide="1">
+            <div class="slide-header">
+                <div class="logo-area"></div>
+            </div>
+            <div class="slide-content cover">
+                <h1 class="cover-title">PDF 生成功能测试</h1>
+                <p class="cover-subtitle">验证 HTML PPT 转 PDF 的完整功能</p>
+                <div class="cover-meta">
+                    <p>Diana HTML PPT Skill</p>
+                    <p class="date">2026年1月18日</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 2: Content -->
+        <section class="slide" data-slide="2">
+            <div class="slide-header">
+                <h2 class="slide-title">测试要点</h2>
+            </div>
+            <div class="slide-content">
+                <div class="text-block">
+                    <h3>PDF 生成功能验证</h3>
+                    <ul>
+                        <li>清晰的分页效果</li>
+                        <li>文字可选择性</li>
+                        <li>图表完整保留</li>
+                        <li>流程图正常显示</li>
+                        <li>背景色和渐变效果</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 3: Chart -->
+        <section class="slide" data-slide="3">
+            <div class="slide-header">
+                <h2 class="slide-title">数据图表测试</h2>
+            </div>
+            <div class="slide-content">
+                <div id="test-chart" style="width: 100%; height: 500px;"></div>
+            </div>
+        </section>
+
+        <!-- Slide 4: Mermaid -->
+        <section class="slide" data-slide="4">
+            <div class="slide-header">
+                <h2 class="slide-title">流程图测试</h2>
+            </div>
+            <div class="slide-content center">
+                <div class="mermaid">
+                    graph LR
+                    A[HTML PPT] --> B[Playwright]
+                    B --> C[渲染页面]
+                    C --> D[生成 PDF]
+                    D --> E[自动打开预览]
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="nav-controls">
+        <button class="nav-btn" id="prev-btn">←</button>
+        <span id="slide-counter">1 / 4</span>
+        <button class="nav-btn" id="next-btn">→</button>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+        <div class="progress-fill"></div>
+    </div>
+
+    <script src="presentation.js"></script>
+    <script>
+        // Initialize chart after page load
+        window.addEventListener('load', function() {
+            const chart = echarts.init(document.getElementById('test-chart'));
+            chart.setOption({
+                title: {
+                    text: '季度销售数据',
+                    left: 'center',
+                    textStyle: { fontSize: 24 }
+                },
+                tooltip: { trigger: 'axis' },
+                xAxis: {
+                    type: 'category',
+                    data: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    axisLabel: { fontSize: 16 }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: { fontSize: 16 }
+                },
+                series: [{
+                    name: '销售额',
+                    type: 'bar',
+                    data: [120, 200, 150, 180],
+                    itemStyle: { color: '#3498db' },
+                    label: {
+                        show: true,
+                        position: 'top',
+                        fontSize: 16
+                    }
+                }]
+            });
+
+            // Responsive resize
+            window.addEventListener('resize', () => chart.resize());
+        });
+    </script>
+</body>
+</html>
