@@ -12,6 +12,8 @@ Diana 是一个专业的 Claude Agent Skill，专注于创建商用级别的 HTM
 - 🖼️ **媒体支持** - 本地图片、视频素材引用
 - 📱 **响应式设计** - 适配不同屏幕尺寸
 - 🌐 **离线部署** - 可选的离线环境支持
+- 🧱 **总分架构** - `index.html` 总控，`slides/` 分页，`slides.config.js` 唯一顺序来源
+- 🖨️ **PDF 导出** - Playwright 渲染并导出为 PDF（Node/Python 两种方式）
 
 ## 🚀 快速开始
 
@@ -52,6 +54,22 @@ Diana 遵循系统化的工作流程：
 
 详细工作流程请查看 [skill.md](./skill.md)
 
+## 🧱 模板与“总分”架构（最新）
+
+本仓库内置的模板采用“总分”架构，便于维护与迭代：
+
+- `index.html`：总控加载配置、注入页面、控制导航（不直接写页面内容）
+- `slides.config.js`：页面顺序的唯一真源（新增/删除/换序只改这里）
+- `slides/slide-xx-*.js`：每页一个文件（只返回单个 `<section class="slide">`）
+- `style.css`：共享样式（页面级样式必须命名空间化，避免跨页污染）
+- `presentation.js`：交互逻辑与渲染（包含 ECharts/Mermaid/溢出自适配等）
+
+复制模板到你的工作目录：
+
+```bash
+cp -r {skill_dir}/assets/ppt-template/* .
+```
+
 ## 📁 项目结构
 
 ```
@@ -63,12 +81,40 @@ html-ppt-diana/
 │       ├── index.html
 │       ├── style.css
 │       └── presentation.js
+│       ├── slides.config.js
+│       ├── slides/
+│       ├── export_pdf.mjs         # Node + Playwright 导出 PDF
+│       ├── generate_pdf.py        # Python + Playwright 导出 PDF
+│       └── package.json           # export_pdf.mjs 所需依赖
+├── test-ppt/             # 示例输出（用于自测模板）
 └── references/           # 参考文档
     ├── design-principles.md        # 设计原则
     ├── layout-patterns.md          # 布局模式
     ├── echarts-best-practices.md   # ECharts 最佳实践
     ├── mermaid-fix.md              # Mermaid 渲染方案
     └── offline-setup.md            # 离线部署指南
+```
+
+## 🖨️ 导出 PDF（Playwright）
+
+### 方式 A：Node（推荐）
+
+在你的演示目录（包含 `index.html`）执行：
+
+```bash
+npm install
+npx playwright install chromium
+node export_pdf.mjs ./presentation.pdf
+```
+
+说明：`export_pdf.mjs` 会启动本地静态服务，渲染全部页面，并做 Mermaid/布局校验后输出 PDF。
+
+### 方式 B：Python
+
+```bash
+pip install playwright
+python -m playwright install chromium
+python generate_pdf.py index.html presentation.pdf
 ```
 
 ## 🎨 设计原则
